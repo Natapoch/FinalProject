@@ -58,8 +58,16 @@ def parse2(*args):
                     continue
                 flag_page = True
             soup = BeautifulSoup(page.text, 'lxml')
+            elem = soup.find_all('tbody', class_='altasib-spoiler-content')
+            if len(elem) == 0:
+                log_file.write('Problem in original text')
+                print(link)
+                continue
             log_file.write("\n----------------------------------\n")
-
+            log_file.write('~' * 75 + '\n')
+            original_text = elem[0].text
+            original_text = note_delete(author_delete(sentence_numbers_delete(original_text)))
+            log_file.write('\n' + '~' * 75 + '\n')
             #for elem in soup.find_all('div', class_='news-detail'):
             if len(soup.find_all('div', class_='news-detail')) > 0:
                 elem = soup.find_all('div', class_='news-detail')[0]
@@ -112,7 +120,7 @@ def parse2(*args):
                     criteria_list[criteria_num - 1] = criteria[criteria_index + criteria[criteria_index:].find('\n') - 1]
             log_file.write('\n&&&&&&&&&\nБАЛЛЫ\n')
             log_file.write(' '.join(list(map(str, criteria_list))))
-            ege_list_with_essays.append((indent_replace(essay), *criteria_list))
+            ege_list_with_essays.append((original_text, indent_replace(essay), *criteria_list))
             time.sleep(PAUSE_TIME)
 
 
@@ -123,7 +131,9 @@ def parse2(*args):
 
         encode_error_counter = 0
         with open('Essays with kriteria2.txt', 'w', encoding='utf-8') as file_:  # добавили в файл
-            for essay, *criteria_list in ege_list_with_essays:
+            for original_text, essay, *criteria_list in ege_list_with_essays:
+                file_.write(original_text)
+                file_.write('\n')
                 file_.write(essay)
                 file_.write('\n')
                 for criteria_num, criteria_score in enumerate(criteria_list):
@@ -133,7 +143,7 @@ def parse2(*args):
 
         print(f"Read {len(ege_list_with_essays)} essays")
         print(f"Encode error in {encode_error_counter} essays")
-        column_names = ['Текст сочинения']
+        column_names = ['Оригинальный текст', 'Текст сочинения']
         for num in range(1, NUMBER_OF_CRITERIA + 1):
             column_names.append(f'Критерий K{num}')
         df = pd.DataFrame(ege_list_with_essays, columns=column_names)
@@ -148,3 +158,12 @@ def indent_replace(text):
     while text[-1] in [INDENT_SIGN, ' ', '\t']:
         text = text[:-1]
     return text
+
+def sentence_numbers_delete(text):
+    return re.sub(r'\(\d*\)', ' ', text)
+
+def author_delete(text):
+    return re.sub(r'\(.*\)', '', text)
+
+def note_delete(text):
+    return text if text.find('*') == -1 else text[:text.find('*')]

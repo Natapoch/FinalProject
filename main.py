@@ -19,21 +19,13 @@ def exit_func(*args):
     EXECUTE_FLAG = False
 
 
-COMMANDS_LIST = [('parse kritika24', not_implemented),  #чтоб не сломать и не ждать 1,5 часа
-                 ('parse mogu-pisat', not_implemented),
+COMMANDS_LIST = [('parse kritika24', parse),
+                 ('parse mogu-pisat', parse2),
                  ('analyze criterion', criterion_analyze),
                  ('analyze all criteria', all_criteria_analyze),
                  ('debug', test),
-                 #('construct dataframe', construct_dataframe),
-                 #('fit', not_implemented),
-                 #('analyze K2', k2_analyze),
-                 #('analyze K4', k4_analyze),
-                 #('analyze K5', k5_analyze),
-                 #('analyze K6', k6_analyze),
-                 #('analyze K11', k11_analyze),
-                 #('analyze K12', k12_analyze),
-                 #('classification for k6', not_implemented),
-                 ('exit', exit_func),]
+                 ('exit', exit_func),
+                 ]
 
 def read_command():
     return input('Enter required command: ')
