@@ -18,3 +18,4 @@ par(mfrow = c(2,4))
 for (i in c(1:4)){                    #подставить 5:8, 9:12, 13:16, 17:20, 21:24 для получения визуализаций 
   barplot(vector[,i], names.arg = criteria_table$Model, 
           col = c('#de95a1', 'grey', 'grey', 'grey', 'grey', 'grey', 'grey'))
+  }
